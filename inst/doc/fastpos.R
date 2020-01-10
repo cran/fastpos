@@ -36,7 +36,7 @@ pos <- simulate_pos(x_pop = pop[,1],
                     upper_limit = 0.6)
 hist(pos, xlim = c(0, 1000), xlab = c("Point of stability"),
      main = "Histogram of points of stability for rho = .5+-.1")
-quantile(pos, c(.8, .9, .95))
+quantile(pos, c(.8, .9, .95), na.rm = T)
 
 ## ----message=TRUE, warning=TRUE, paged.print=TRUE-----------------------------
 find_critical_pos(rho = seq(.1, .7, .1), sample_size_max = 1000,
