@@ -20,6 +20,18 @@ NULL
 #' @keywords internal
 "_PACKAGE"
 
+#' Stops execution without giving error
+#'
+#' This is useful to have a consistent behavior when the user interrupts
+#' function execution but this interruption is not catched by C++. If this
+#' happens nothing is returned. But if C++ catches the interrupt, we need to
+#' stop execution ourselves (and also return nothing).
+#' @noRd
+stop_quietly <- function() {
+  blankMsg <- sprintf("\r%s\r", paste(rep("", getOption("width")-1L), collapse=" "));
+  stop(simpleError(blankMsg));
+}
+
 #' Creates a population with a specified correlation.
 #'
 #' @param rho Population correlation.
@@ -28,14 +40,35 @@ NULL
 #' @examples
 #' pop <- create_pop(0.5, 100000)
 #' cor(pop)
-#' @export
-create_pop <- function(rho, size){
+#' @noRd
+create_pop_inexact <- function(rho, size){
   mu <- c(1, 2)
   s1 <- 2
   s2 <- 8
   sigma <- matrix(c(s1^2, s1 * s2 * rho, s1 * s2 * rho, s2^2), 2)
   pop <- MASS::mvrnorm(n = size, mu = mu, Sigma = sigma)
   pop
+}
+
+#' Creates a population with a specified correlation.
+#'
+#' The correlation will be exactly the one specified. The used method is
+#' described here:
+#' https://stats.stackexchange.com/questions/15011/generate-a-random-variable-with-a-defined-correlation-to-an-existing-variables/15040#15040
+#'
+#' @param rho Population correlation.
+#' @param size Population size.
+#' @return Two-dimensional population matrix with a specific correlation.
+#' @examples
+#' pop <- create_pop(0.5, 100000)
+#' cor(pop)
+#' @export
+create_pop <- function(rho, size) {
+  y <- stats::rnorm(size)
+  x <- stats::rnorm(size)
+  y.perp <- stats::residuals(stats::lm(x ~ y))
+  x <- rho * stats::sd(y.perp) * y + y.perp * stats::sd(y) * sqrt(1 - rho^2)
+  matrix(c(x, y), ncol = 2)
 }
 
 #' Run simulation for one specific correlation.
@@ -82,6 +115,11 @@ find_one_critical_pos <- function(rho, sample_size_min = 20,
   # create dist of pos
   res <- simulate_pos(x, y, n_studies, sample_size_min, sample_size_max, T,
                        lower_limit, upper_limit)
+  # on interruption, C++ will return -1 (if R interrupts by itself, nothing
+  # will be returned, it just stops)
+  if (length(res) == 1) {
+    if (res == -1) stop_quietly()
+  }
   names(res) <- unlist(paste("study ", 1:length(res)))
   n_not_breached <- sum(is.na(res))
 
@@ -111,7 +149,8 @@ find_one_critical_pos <- function(rho, sample_size_min = 20,
 #' @param rhos Vector of population correlations (can also be a single
 #'   correlation).
 #' @param precision Precision around the correlation which is acceptable
-#'   (defaults to 0.1). The precision will determine the corridor of stability which is just rho+-precision.
+#'   (defaults to 0.1). The precision will determine the corridor of stability
+#'   which is just rho+-precision.
 #' @param precision_rel Whether the precision is absolute (rho+-precision or
 #'   relative rho+-rho*precision), boolean (defaults to FALSE).
 #' @param n_studies Number of studies to run for each rho (defaults to 10e3).
@@ -124,8 +163,8 @@ find_one_critical_pos <- function(rho, sample_size_min = 20,
 #' @return A data frame containing all the above information, as well as the
 #'   points of stability.
 #' @examples
-#' find_critical_pos(rho = 0.5)
-#' find_critical_pos(rho = c(0.4, 0.5))
+#' find_critical_pos(rhos = 0.5)
+#' find_critical_pos(rhos = c(0.4, 0.5), n_studies = 1e3)
 #' @export
 find_critical_pos <- function(rhos, precision = 0.1, precision_rel = FALSE,
                               sample_size_min = 20, sample_size_max = 1000,

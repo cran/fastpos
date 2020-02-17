@@ -2,8 +2,8 @@ Package: fastpos
 Type: Package
 Title: Finds the Critical Sequential Point of Stability for a Pearson
         Correlation
-Version: 0.2.0
-Date: 2020-01-09
+Version: 0.3.0
+Date: 2020-02-12
 Authors@R: person("Johannes", "Titz", email = "johannes.titz@gmail.com",
   role = c("aut", "cre", "cph"))
 Description: Finds the critical sample size ("critical point of stability") for a 
@@ -19,8 +19,8 @@ RoxygenNote: 7.0.2
 Suggests: knitr, rmarkdown, testthat (>= 2.1.0), covr
 VignetteBuilder: knitr
 NeedsCompilation: yes
-Packaged: 2020-01-10 09:57:12 UTC; jt
+Packaged: 2020-02-17 10:04:16 UTC; jt
 Author: Johannes Titz [aut, cre, cph]
 Maintainer: Johannes Titz <johannes.titz@gmail.com>
 Repository: CRAN
-Date/Publication: 2020-01-10 10:20:02 UTC
+Date/Publication: 2020-02-17 10:30:02 UTC

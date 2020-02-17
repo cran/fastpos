@@ -28,7 +28,7 @@ find_critical_pos(rho = c(.5, .7), sample_size_min = 20, sample_size_max = 2500,
 pop <- create_pop(0.5, 1000000)
 pos <- simulate_pos(x_pop = pop[,1],
                     y_pop = pop[,2],
-                    number_of_studies = 1000,
+                    n_studies = 1000,
                     sample_size_min = 20,
                     sample_size_max = 1000,
                     replace = T,

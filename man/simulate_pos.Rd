@@ -7,7 +7,7 @@
 simulate_pos(
   x_pop,
   y_pop,
-  number_of_studies,
+  n_studies,
   sample_size_min,
   sample_size_max,
   replace,
@@ -20,9 +20,10 @@ simulate_pos(
 
 \item{y_pop}{Second vector of population.}
 
-\item{number_of_studies}{How many studies to conduct.}
+\item{n_studies}{How many studies to conduct.}
 
-\item{sample_size_min}{Minimum sample size to start in corridor of stability.}
+\item{sample_size_min}{Minimum sample size to start in corridor of
+stability.}
 
 \item{sample_size_max}{How many participants to draw at maximum.}
 
@@ -41,5 +42,5 @@ be further processed to calculate the critical point of stability.
 }
 \examples{
 pop <- fastpos::create_pop(0.5, 1000000)
-simulate_pos(pop[,1], pop[,2], 1000, 20, 1000, TRUE, 0.4, 0.6)
+simulate_pos(pop[,1], pop[,2], 100, 20, 1000, TRUE, 0.4, 0.6)
 }
