@@ -16,10 +16,38 @@ diff_rel <- (nicebread-cpos[,2:4])/nicebread
 
 test_that("Schoenbrodt and Perugini's values are close to fastpos' values for
           rho = .1 and .7", {
-  # average relative deviation within 1%
-  expect_true(abs(mean(unlist(diff_rel))) < 0.01)
-  # individual relative deviation within 2%
-  expect_true(all(abs(diff_rel) < .02))
+  # average relative deviation within 4%
+  expect_true(abs(mean(unlist(diff_rel))) < 0.04)
+  # individual relative deviation within 4%
+  expect_true(all(abs(diff_rel) < .04))
+})
+
+cpos_mc <- find_critical_pos(rho = c(.1, .7), sample_size_max = 1000,
+                             n_studies = 40000,
+                             n_cores = future::availableCores())
+
+diff_rel_mc <- (nicebread-cpos_mc[,2:4])/nicebread
+
+test_that("Schoenbrodt and Perugini's values are close to fastpos' values for
+          rho = .1 and .7 (with multiple cores)", {
+  # average relative deviation within 4%
+  expect_true(abs(mean(unlist(diff_rel_mc))) < 0.04)
+  # individual relative deviation within 4%
+  expect_true(all(abs(diff_rel_mc) < .04))
+})
+
+cpos_mc_replace <- find_critical_pos(rho = c(.1, .7), sample_size_max = 1000,
+                             n_studies = 40000,
+                             n_cores = future::availableCores(), replace = FALSE)
+
+diff_rel_mc_replace <- (nicebread-cpos_mc[,2:4])/nicebread
+
+test_that("Schoenbrodt and Perugini's values are close to fastpos' values for
+          rho = .1 and .7 (with multiple cores) and replace = TRUE", {
+  # average relative deviation within 4%
+  expect_true(abs(mean(unlist(diff_rel_mc_replace))) < 0.04)
+  # individual relative deviation within 4%
+  expect_true(all(abs(diff_rel_mc_replace) < .04))
 })
 
 test_that("unloading package works",
@@ -28,3 +56,7 @@ test_that("unloading package works",
 
 test_that("relative precision works",
           expect_equal(c(sim$lower_limit, sim$upper_limit), c(.45, .55)))
+
+
+test_that("create_pop_inexact (not used atm) works",
+          expect_equal(round(cor(create_pop_inexact(0.5, 1e6))[1,2], 2), 0.50))
