@@ -67,7 +67,7 @@ create_pop_inexact <- function(rho, size){
 create_pop <- function(rho, size) {
   y <- stats::rnorm(size)
   x <- stats::rnorm(size)
-  y.perp <- stats::residuals(stats::lm(x ~ y))
+  y.perp <- stats::residuals(stats::lm.fit(cbind(1, y), x))
   x <- rho * stats::sd(y.perp) * y + y.perp * stats::sd(y) * sqrt(1 - rho^2)
   matrix(c(x, y), ncol = 2)
 }
@@ -111,13 +111,12 @@ find_one_critical_pos <- function(rho, sample_size_min = 20,
   # we will use 1 normal invocation and n_cores - 1 futures, this way we have
   # a progress bar
   if (n_cores > 1){
-    #future::plan(multisession)
     f <- list()
     for (ii in seq(n_cores - 1)) {
       f[[ii]] <- future::future({
         simulate_pos(x, y, ceiling(n_studies/(n_cores)), sample_size_min,
                      sample_size_max, replace, lower_limit, upper_limit)
-      })
+      }, seed = TRUE)
     }
     res <- simulate_pos(x, y, ceiling(n_studies/n_cores), sample_size_min,
                         sample_size_max, replace, lower_limit, upper_limit)

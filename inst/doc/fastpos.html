@@ -28,22 +28,6 @@ document.addEventListener('DOMContentLoaded', function(e) {
   }
 });
 </script>
-<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
-// v0.0.1
-// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
-
-document.addEventListener('DOMContentLoaded', function() {
-  const codeList = document.getElementsByClassName("sourceCode");
-  for (var i = 0; i < codeList.length; i++) {
-    var linkList = codeList[i].getElementsByTagName('a');
-    for (var j = 0; j < linkList.length; j++) {
-      if (linkList[j].innerHTML === "") {
-        linkList[j].setAttribute('aria-hidden', 'true');
-      }
-    }
-  }
-});
-</script>
 
 
 <style type="text/css">code{white-space: pre;}</style>
@@ -393,10 +377,10 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a>onecore &lt;-<span class="st"> </span><span class="cf">function</span>() {<span class="kw">find_critical_pos</span>(<span class="fl">0.5</span>)}</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a>multicore &lt;-<span class="st"> </span><span class="cf">function</span>() {<span class="kw">find_critical_pos</span>(<span class="fl">0.5</span>, <span class="dt">n_cores =</span> future<span class="op">::</span><span class="kw">availableCores</span>())}</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a>microbenchmark<span class="op">::</span><span class="kw">microbenchmark</span>(<span class="kw">onecore</span>(), <span class="kw">multicore</span>(), <span class="dt">times =</span> <span class="dv">10</span>)</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true"></a><span class="co">#&gt; Unit: seconds</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true"></a><span class="co">#&gt;         expr      min       lq     mean  median       uq      max neval cld</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true"></a><span class="co">#&gt;    onecore() 1.475980 1.545946 1.615494 1.64546 1.666414 1.730338    10   a</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true"></a><span class="co">#&gt;  multicore() 1.382891 1.405702 1.727238 1.45135 1.528403 4.159442    10   a</span></span></code></pre></div>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true"></a><span class="co">#&gt; Unit: milliseconds</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true"></a><span class="co">#&gt;         expr      min       lq     mean   median       uq      max neval cld</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true"></a><span class="co">#&gt;    onecore() 999.9301 1028.469 1092.582 1096.347 1117.159 1306.267    10   a</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true"></a><span class="co">#&gt;  multicore() 956.1311 1024.522 1267.423 1092.255 1125.526 3027.130    10   a</span></span></code></pre></div>
 <p>When increasing the number of studies, the benefit becomes visible, but the difference is not gigantic:</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a>onecore &lt;-<span class="st"> </span><span class="cf">function</span>() {<span class="kw">find_critical_pos</span>(<span class="fl">0.5</span>, <span class="dt">n_studies =</span> <span class="fl">1e5</span>)}</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a>multicore &lt;-<span class="st"> </span><span class="cf">function</span>() {<span class="kw">find_critical_pos</span>(<span class="fl">0.5</span>, <span class="dt">n_studies =</span> <span class="fl">1e5</span>,</span>
@@ -404,9 +388,9 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true"></a>microbenchmark<span class="op">::</span><span class="kw">microbenchmark</span>(<span class="kw">onecore</span>(), <span class="kw">multicore</span>(),</span>
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true"></a>                               <span class="dt">times =</span> <span class="dv">10</span>)</span>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true"></a><span class="co">#&gt; Unit: seconds</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true"></a><span class="co">#&gt;         expr      min       lq     mean   median       uq      max neval cld</span></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true"></a><span class="co">#&gt;    onecore() 7.776019 7.829460 8.010746 8.049805 8.171719 8.205209    10   b</span></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true"></a><span class="co">#&gt;  multicore() 4.394881 4.779768 4.887100 4.911064 5.021295 5.179732    10  a</span></span></code></pre></div>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true"></a><span class="co">#&gt;         expr      min       lq     mean   median       uq       max neval cld</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true"></a><span class="co">#&gt;    onecore() 7.948525 8.203709 9.314504 8.951659 9.881046 12.846380    10   b</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true"></a><span class="co">#&gt;  multicore() 5.288073 5.884233 6.867288 6.565180 8.083799  8.321451    10  a</span></span></code></pre></div>
 <p>The test was done on my local computer with 4 cores.</p>
 </div>
 <div id="how-fast-is-fastpos" class="section level2">
@@ -444,7 +428,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <div id="contributing" class="section level2">
 <h2>Contributing</h2>
 <p>Comments and feedback of any kind are very welcome! I will thoroughly consider every suggestion on how to improve the code, the documentation, and the presented examples. Even minor things, such as suggestions for better wording or improving grammar in any part of the package, are more than welcome.</p>
-<p>If you want to make a pull request, please check that you can still build the package without any errors, warnings, or notes. Overall, simply stick to the R packages book: <a href="https://r-pkgs.org/" class="uri">https://r-pkgs.org/</a> and follow the code style described here: <a href="http://r-pkgs.had.co.nz/r.html#style" class="uri">http://r-pkgs.had.co.nz/r.html#style</a></p>
+<p>If you want to make a pull request, please check that you can still build the package without any errors, warnings, or notes. Overall, simply stick to the R packages book: <a href="https://r-pkgs.org/" class="uri">https://r-pkgs.org/</a></p>
 </div>
 <div id="references" class="section level2 unnumbered">
 <h2 class="unnumbered">References</h2>

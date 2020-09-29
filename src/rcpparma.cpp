@@ -5,6 +5,16 @@
 #include <RcppArmadilloExtensions/sample.h>
 using namespace Rcpp;
 
+#if _WIN32
+#include <io.h>
+#define ISATTY _isatty
+#define FILENO _fileno
+#else
+#include <unistd.h>
+#define ISATTY isatty
+#define FILENO fileno
+#endif
+
 // [[Rcpp::depends(RcppProgress)]]
 #include <progress.hpp>
 #include <progress_bar.hpp>
@@ -125,13 +135,14 @@ IntegerVector simulate_pos(NumericVector x_pop,
                            bool replace,
                            float lower_limit,
                            float upper_limit){
+  bool interactive = ISATTY(FILENO(stdin));
   IntegerVector ret(n_studies);
   int npop = x_pop.size();
   NumericVector index_pop(npop);
   for (int i = 0; i < npop; i++){
     index_pop[i] = i;
   }
-  Progress p(n_studies, true);
+  Progress p(n_studies, interactive);
   for (int k = 0; k < n_studies; k++){
     if (k % 5000 == 0){
       if (Progress::check_abort()){
