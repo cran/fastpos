@@ -110,7 +110,13 @@ int simulate_one_pos(NumericVector x_pop,
 //' Simulate several points of stability
 //'
 //' Runs several simulations and returns the points of stability, which can then
-//' be further processed to calculate the critical point of stability.
+//' be further processed to calculate the critical point of stability. This
+//' function should only be used if you need the specific points of stability.
+//' For instance, if you want to study the method in more detail and the higher
+//' level functions are not sufficient.
+//'
+//' If you just want to calculate a quantile of the distribution, use the main
+//' function of the package [fastpos::find_critical_pos()]).
 //'
 //' @param x_pop First vector of population.
 //' @param y_pop Second vector of population.
@@ -121,10 +127,18 @@ int simulate_one_pos(NumericVector x_pop,
 //' @param n_studies How many studies to conduct.
 //' @param sample_size_min Minimum sample size to start in corridor of
 //'   stability.
+//' @param progress Should progress bar be displayed? Boolean, default is FALSE.
 //' @return Vector of sample sizes at which corridor of stability was reached.
 //' @examples
-//' pop <- fastpos::create_pop(0.5, 1000000)
-//' simulate_pos(pop[,1], pop[,2], 100, 20, 1000, TRUE, 0.4, 0.6)
+//' # set up a population
+//' pop <- fastpos::create_pop(rho = 0.5, size = 1e6)
+//' # create a distribution of points of stability
+//' pos <- simulate_pos(x_pop = pop[,1], y_pop = pop[,2], n_studies = 100,
+//'                     sample_size_min = 20, sample_size_max = 1e3,
+//'                     replace = TRUE, lower_limit = 0.4, upper_limit = 0.6,
+//'                     progress = TRUE)
+//' # calculate quantiles or any other parameter of the distribution
+//' quantile(pos, c(.8, .9, .95))
 //' @export
 // [[Rcpp::export]]
 IntegerVector simulate_pos(NumericVector x_pop,
@@ -134,15 +148,15 @@ IntegerVector simulate_pos(NumericVector x_pop,
                            int sample_size_max,
                            bool replace,
                            float lower_limit,
-                           float upper_limit){
-  bool interactive = ISATTY(FILENO(stdin));
+                           float upper_limit,
+                           bool progress){
   IntegerVector ret(n_studies);
   int npop = x_pop.size();
   NumericVector index_pop(npop);
   for (int i = 0; i < npop; i++){
     index_pop[i] = i;
   }
-  Progress p(n_studies, interactive);
+  Progress p(n_studies, progress);
   for (int k = 0; k < n_studies; k++){
     if (k % 5000 == 0){
       if (Progress::check_abort()){
