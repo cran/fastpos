@@ -47,7 +47,8 @@ But note that this will increase the time for the simulation.}
 \item{n_studies}{Number of studies to run for each rho (defaults to 1e4). A vector
 can be used (different values for different rhos).}
 
-\item{n_cores}{Number of cores to use for simulation. Defaults to 1.}
+\item{n_cores}{Number of cores to use for simulation. Defaults to 1. Under
+Windows only 1 core is supported because forking is used.}
 
 \item{pop_size}{Population size (defaults to 1e6). This is the size of the
 population from which value pairs for correlations are drawn. This value should

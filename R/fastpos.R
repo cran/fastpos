@@ -71,7 +71,7 @@ create_pop <- function(rho, size) {
 #' find_one_critical_pos(rho = 0.5)
 #' @noRd
 #' @importFrom stats cor quantile
-#' @importFrom pbapply pblapply
+#' @importFrom pbmcapply pbmclapply
 #' @importFrom tibble lst
 find_one_critical_pos <- function(rho, sample_size_min = 20,
                                   sample_size_max = 1e3,
@@ -107,13 +107,14 @@ find_one_critical_pos <- function(rho, sample_size_min = 20,
   rho_pop <- stats::cor(x, y)
 
   # create dist of pos
-
+  n_studies_per_core <- ceiling(n_studies / n_cores)
   if (n_cores > 1) {
-    res <- unlist(pbapply::pblapply(1:ceiling(n_studies / 1e3), function(k)
-      simulate_pos(x, y, 1e3, sample_size_min,
+    res <- unlist(pbmcapply::pbmclapply(1:n_cores, function(k)
+      simulate_pos(x, y, n_studies_per_core, sample_size_min,
                    sample_size_max, replace,
                    lower_limit, upper_limit, progress = FALSE),
-      cl = n_cores
+      mc.cores = n_cores,
+      mc.set.seed = FALSE
     ))
   } else {
     res <- simulate_pos(x, y, n_studies, sample_size_min, sample_size_max, replace,
@@ -172,7 +173,8 @@ find_one_critical_pos <- function(rho, sample_size_min = 20,
 #'   But note that this will increase the time for the simulation.
 #' @param n_studies Number of studies to run for each rho (defaults to 1e4). A vector
 #'   can be used (different values for different rhos).
-#' @param n_cores Number of cores to use for simulation. Defaults to 1.
+#' @param n_cores Number of cores to use for simulation. Defaults to 1. Under
+#'   Windows only 1 core is supported because forking is used.
 #' @param pop_size Population size (defaults to 1e6). This is the size of the
 #'   population from which value pairs for correlations are drawn. This value should
 #'   usually not be decreased as it can lead to less accurate results.
@@ -224,6 +226,10 @@ find_critical_pos <- function(rho,
                               precision = lifecycle::deprecated(),
                               precision_rel = lifecycle::deprecated(),
                               rhos = lifecycle::deprecated()) {
+  if (.Platform$OS.type == "windows" & n_cores > 1) {
+    n_cores <- 1
+    warnings("On Windows only one core can be used. Sorry.")
+  }
   if (lifecycle::is_present(precision)) {
     lifecycle::deprecate_warn(
       when = "0.6.0",
