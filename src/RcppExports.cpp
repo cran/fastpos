@@ -12,14 +12,14 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // simulate_one_pos
-int simulate_one_pos(NumericVector x_pop, NumericVector y_pop, NumericVector index_pop, int sample_size_min, int sample_size_max, bool replace, float lower_limit, float upper_limit);
+int simulate_one_pos(NumericVector x_pop, NumericVector y_pop, IntegerVector index_pop, int sample_size_min, int sample_size_max, bool replace, float lower_limit, float upper_limit);
 RcppExport SEXP _fastpos_simulate_one_pos(SEXP x_popSEXP, SEXP y_popSEXP, SEXP index_popSEXP, SEXP sample_size_minSEXP, SEXP sample_size_maxSEXP, SEXP replaceSEXP, SEXP lower_limitSEXP, SEXP upper_limitSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericVector >::type x_pop(x_popSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type y_pop(y_popSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type index_pop(index_popSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type index_pop(index_popSEXP);
     Rcpp::traits::input_parameter< int >::type sample_size_min(sample_size_minSEXP);
     Rcpp::traits::input_parameter< int >::type sample_size_max(sample_size_maxSEXP);
     Rcpp::traits::input_parameter< bool >::type replace(replaceSEXP);
